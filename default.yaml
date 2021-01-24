@@ -1,0 +1,15 @@
+radios:
+  # the following options are possible:
+  # shuffle (boolean, default: False) if all tracks in the playlist should be shuffled. Playback also starts in the middle of a track.
+  # stop (boolean, default: False) If the playback should be stopped when the station is tuned out of. Highly recommended for web streams.
+  # pause (boolean, default: False) If the playback should be paused when the station is tuned out of.
+  # equalizer (str, default: None) Use one of VLC built-in equalizers
+
+  - name: Soma.FM Secret Agent
+    uri: https://somafm.com/secretagent130.pls
+    frequency: 198kHz
+    stop: True
+  - name: Soma.FM Sonic Universe
+    uri: https://somafm.com/sonicuniverse130.pls
+    frequency: 216kHz
+    stop: True
