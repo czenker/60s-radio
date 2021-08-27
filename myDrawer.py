@@ -28,6 +28,7 @@ colors = {
 data = []
 lastScreen = None
 currentLine = None
+lastLogLine = None
 
 # #######
 #
@@ -108,7 +109,25 @@ def formatTime(msec):
     else:
         return "{mins:>02d}:{secs:>02d}".format(mins=mins, secs=secs)
 
+def logCurrentPlayed():
+    global lastLogLine
+    if mySerial.currentRadio:
+        radio = mySerial.currentRadio
+        media = radio.getMedia()
+        if media:
+            description = media.get_mrl()
+        else:
+            description = ""
+        logLine = f"Now playing \"{radio.name}\""
+        if description != "":
+            logLine += ": " + description
+        if logLine != lastLogLine:
+            log(logLine)
+            lastLogLine = logLine
+
+
 def draw_thread(noGui = None, guiRefresh = 1):
+
     if noGui == None:
         noGui = not hasTerminal()
 
@@ -117,7 +136,10 @@ def draw_thread(noGui = None, guiRefresh = 1):
     lastNetTime = None
 
     while True:
-        if not noGui:
+        logCurrentPlayed()
+        if noGui:
+            pass
+        else:
             clear()
             terminalCols, terminalLines = getScreenSize()
 
@@ -204,12 +226,19 @@ def draw_thread(noGui = None, guiRefresh = 1):
                 radio = mySerial.currentRadio
                 player = radio.getPlayer()
                 media = radio.getMedia()
+                if media:
+                    if media.get_meta(vlc.Meta.Artist) != None:
+                        description = "{artist} – {track}".format(
+                            artist = radio.getPlayer().get_media().get_meta(vlc.Meta.Artist),
+                            track = radio.getPlayer().get_media().get_meta(vlc.Meta.Title)
+                        )
+                    else:
+                        description = media.get_meta(vlc.Meta.Title)
+                else:
+                    description = ""
+                
                 writeLine(radio.name)
-                writeLine("{}/{}".format(formatTime(player.get_time()), formatTime(player.get_length())))
-
-
-
-
+                writeLine("{}/{} {}".format(formatTime(player.get_time()), formatTime(player.get_length()), description))
 
             # #####
             #

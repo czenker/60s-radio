@@ -8,6 +8,7 @@ from myUtil import capToLw, capToMw, capToKw, capToUkw
 from myLog import log, elog, slog
 import myRadios
 import myNoise
+import statistics
 
 currentDict = None
 def getDict():
@@ -24,6 +25,7 @@ def getTuneFactor():
 currentRadio = None
 
 serialObj = None
+lastCaps = []
 
 def parseSerial(line):
     currentDict = {}
@@ -64,6 +66,7 @@ def capToFreq(currentDict):
 
 def thread_run():
     global currentDict
+    global lastCaps
     global currentFreq
     global currentRadio
     global currentTuneFactor
@@ -100,6 +103,12 @@ def thread_run():
                 if mode == 1:
                     # normal mode
                     maxTuneFactor = 0
+
+                    # iron out spikes in cap values
+                    lastCaps = lastCaps[0:3]
+                    lastCaps.insert(0, currentDict["Cap"])
+                    currentDict["Cap"] = statistics.median(lastCaps)
+
                     currentFreq = capToFreq(currentDict)
                     isOn = currentDict["On"] == 1
                     vol = currentDict["Vol"] * 100 / 255 if isOn else 0
