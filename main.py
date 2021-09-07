@@ -51,6 +51,11 @@ myDrawer.start(noGui = args.no_gui, guiRefresh = args.gui_fps)
 # #####
 
 with open(args.confFile, 'r') as stream:
+    new_cwd = os.path.dirname(args.confFile)
+    if new_cwd != '':
+        # change base dir, so that files for VLC can be referenced relative to the configuration file
+        os.chdir(new_cwd)
+        myLog.log(f"Changed cwd to {os.getcwd()}")
     try:
         config = yaml.safe_load(stream)
         if not "radios" in config:
