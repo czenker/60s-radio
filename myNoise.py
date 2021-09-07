@@ -11,7 +11,7 @@ channel = pygame.mixer.find_channel()
 
 def setVolume(volume):
   volume = volume / 100 # method requires a value 0.0-1.0
-  volume = volume * 0.1 # tune the noise down, because it is just VEEEERY loud
+  volume = volume * 0.05 # tune the noise down, because it is just VEEEERY loud
   channel.set_volume(volume)
 
 setVolume(0)
