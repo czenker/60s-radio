@@ -99,6 +99,12 @@ with open(args.confFile, 'r') as stream:
                     shuffle = radioConfig["shuffle"]
                 else:
                     shuffle = False
+                if "start_random" in radioConfig:
+                    if not isinstance(radioConfig["start_random"], bool):
+                        raise ValueError("Expected start_random at index {} to be boolean".format(idx))
+                    start_random = radioConfig["start_random"]
+                else:
+                    start_random = False
                 if "stop" in radioConfig:
                     if not isinstance(radioConfig["stop"], bool):
                         raise ValueError("Expected stop at index {} to be boolean".format(idx))
@@ -118,7 +124,7 @@ with open(args.confFile, 'r') as stream:
                 else:
                     equalizerName = None
 
-                radio = RadioStation(name, uri, frequency, stop=stop, pause=pause, shuffle=shuffle, equalizerName=equalizerName)
+                radio = RadioStation(name, uri, frequency, stop=stop, pause=pause, shuffle=shuffle, start_random=start_random, equalizerName=equalizerName)
                 radios.append(radio)
             except ValueError as e:
                 elog ("Error with radio at index {}: {}".format(idx, e))

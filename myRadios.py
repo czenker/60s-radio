@@ -65,15 +65,15 @@ class RadioStation:
             if diff > 0.5 and self.shouldPause and self.getPlayer().is_seekable():
                 maxPlayerTime = self.getPlayer().get_length()
                 currentPlayerTime = self.getPlayer().get_time()
-                if currentPlayerTime + diff * 1000 <= maxPlayerTime:
+                if maxPlayerTime > 0 and currentPlayerTime + diff * 1000 <= maxPlayerTime:
                     # skip forward in the same song
                     self.getPlayer().set_time(round(currentPlayerTime + diff * 1000))
                 else:
                     self.vlcMediaListPlayer.next()
-                    if self.shuffle:
+                    if self.shuffle or self.start_random:
                         self.getPlayer().set_position(random.random())
 
-    def __init__(self, name, playlistPath, freq = 0, stop = False, pause = False, shuffle = False, equalizerName = None):
+    def __init__(self, name, playlistPath, freq = 0, stop = False, pause = False, shuffle = False, start_random = False, equalizerName = None):
         ''' Represent a radio station and how it is played
 
         Parameters
@@ -117,7 +117,14 @@ class RadioStation:
             (default False)
        
         shuffle: bool
-            Shuffles playback when using a playlist.
+            Shuffles track order when using a playlist.
+
+            (default False)
+       
+        start_random: bool
+            Starts at a random position when using the playlist. 
+            It is a lighter version of `shuffle` as it does not shuffle the track order, but still gives
+            a random entry point into the playlist.
 
             (default False)
         '''
@@ -126,6 +133,7 @@ class RadioStation:
         self.shouldStop = stop
         self.shouldPause = pause
         self.shuffle = shuffle
+        self.start_random = start_random
         self.lastPlayback = None
         [self.minFreq, self.maxFreq, self.band] = self.__detectBand(freq)
         self.vlcMediaListPlayer = vlcInstance.media_list_player_new()
@@ -149,10 +157,14 @@ class RadioStation:
             else:
                 wlog("Equalizer with name {} does not exist. Valid values:".format(equalizerName))
                 wlog(", ".join(eqIndexByName.keys()))
+
+        if start_random:
+            self.vlcMediaListPlayer.play_item_at_index(random.randint(0, len(tracks)-1 ))
+
         if not stop:
             self.vlcMediaListPlayer.play()
 
-        if shuffle:
+        if shuffle or start_random:
             self.getPlayer().set_position(random.random())
     def getPlayer(self):
         return self.vlcMediaListPlayer.get_media_player()
