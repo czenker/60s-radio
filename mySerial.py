@@ -105,7 +105,7 @@ def thread_run():
                     maxTuneFactor = 0
 
                     # iron out spikes in cap values
-                    lastCaps = lastCaps[0:3]
+                    lastCaps = lastCaps[0:4]
                     lastCaps.insert(0, currentDict["Cap"])
                     currentDict["Cap"] = statistics.median(lastCaps)
 

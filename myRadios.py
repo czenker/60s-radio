@@ -70,7 +70,7 @@ class RadioStation:
                     self.getPlayer().set_time(round(currentPlayerTime + diff * 1000))
                 else:
                     self.vlcMediaListPlayer.next()
-                    if self.shuffle or self.start_random:
+                    if (self.shuffle or self.start_random) and diff > 1:
                         self.getPlayer().set_position(random.random())
 
     def __init__(self, name, playlistPath, freq = 0, stop = False, pause = False, shuffle = False, start_random = False, equalizerName = None):
