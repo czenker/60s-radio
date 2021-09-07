@@ -72,7 +72,7 @@ def thread_run():
     global currentTuneFactor
     global serialObj
 
-    lastMode = None
+    modeDebounce = 0
 
     while True:
         if not serialObj or not serialObj.is_open:
@@ -149,11 +149,13 @@ def thread_run():
                     currentFreq = None
                     currentRadio = None
                     currentTuneFactor = None
-                elif mode == 2 and lastMode == 1:
+                if mode == 2:
                     # if: two buttons are pressed
-                    if currentRadio:
+                    modeDebounce += 1
+                    if modeDebounce == 4 and currentRadio:
                         currentRadio.next()
-                lastMode = mode
+                else:
+                    modeDebounce = 0
 
 thread = threading.Thread(target=thread_run, daemon=True)
 thread.name = "serial"
